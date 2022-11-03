@@ -6,10 +6,15 @@ First write your program for the special case in which comm_sz is a power of two
 #include <mpi.h>
 #include <stdio.h>
 
-void tree_sum(int arr[], int len){
-    for(int i=0; i<len; i+=2){
-        arr[i/2]=arr[i]+arr[i+1];
+
+int sum(int arr[], int len){
+    int res=0;
+    for (int i = 0; i < len; i++)
+    {
+        res+=arr[i];
     }
+    return res;
+    
 }
 
 int main(){
@@ -23,25 +28,41 @@ int main(){
     #define len_arr 128
     int global_arr[len_arr];
     for(int i=0; i<len_arr; i++){
-        global_arr[i]=i+1;
+        global_arr[i]=1;
     }
-
     int local_len=len_arr/comm_sz;
-    int local_arr[local_len/2];
-    while(local_len>1){
-        tree_sum(local_arr, local_len);
-        local_len/=2;
-    }
+    int local_arr[local_len];
 
     if(my_rank==0){
         total_sum=local_arr[0];
         for(int source=1; source<comm_sz; source++){
-            MPI_Recv(local_arr, 1, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Send(&global_arr[local_len*source], local_len, MPI_INT, source, 0, MPI_COMM_WORLD);
             total_sum+=local_arr[0];
         }
-        printf("The result is %d\n", total_sum);
+        for (int i = 0; i < local_len; i++)
+        {
+            local_arr[i]=global_arr[i];
+        }
+        
     }else{
-        MPI_Send(local_arr, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        MPI_Recv(local_arr, local_len, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+
+    int my_res=sum(local_arr, local_len);
+    int buff;
+    for (int i = 1; i < comm_sz; i*=2)
+    {
+        if(my_rank%(i*2)==0){
+            MPI_Recv(&buff, 1, MPI_INT, my_rank+i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            my_res+=buff;
+        }else if((my_rank-i)%(i*2)==0){
+            MPI_Send(&my_res, 1, MPI_INT, my_rank-i, 0, MPI_COMM_WORLD);
+            break;
+        }
+    }
+
+    if(my_rank==0){
+        printf("Sum result is %d\n", my_res);
     }
     
     
