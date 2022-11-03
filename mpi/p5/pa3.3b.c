@@ -16,10 +16,8 @@ int sum(int arr[], int len) {
 }
 
 int main() {
-	// 8256
 	int comm_sz, my_rank, total_sum;
 	MPI_Init(NULL, NULL);
-	// comm_sz must be power of 2
 	MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
@@ -30,7 +28,6 @@ int main() {
 		global_arr[i] = 1;
 	}
 	int local_len = len_arr / comm_sz + (len_arr % comm_sz > my_rank);
-	// int local_arr[local_len];
 	int *local_arr = malloc(local_len * sizeof(int));
 
 	if (my_rank == 0) {
