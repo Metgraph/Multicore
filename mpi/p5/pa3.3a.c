@@ -26,6 +26,14 @@ int main(){
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
     #define len_arr 128
+    if(len_arr%comm_sz!=0){
+        if(my_rank==0){
+            printf("ERROR: wrong process number\n");
+        }
+        MPI_Finalize();
+        return 1;
+    }
+    
     int global_arr[len_arr];
     for(int i=0; i<len_arr; i++){
         global_arr[i]=1;
