@@ -5,7 +5,6 @@ Write the odd-even sort algorithm using RMA with MPI_Fence
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
 
 int get_my_sz(int my_rank, int comm_sz, int v_sz) {
 	return v_sz / comm_sz + (v_sz % comm_sz > my_rank ? 1 : 0);
