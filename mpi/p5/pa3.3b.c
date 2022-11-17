@@ -21,18 +21,18 @@ int main() {
 	MPI_Comm_size(MPI_COMM_WORLD, &comm_sz);
 	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
 
-#define len_arr 119
+#define LEN_ARR 119
 
-	int global_arr[len_arr];
-	for (int i = 0; i < len_arr; i++) {
+	int global_arr[LEN_ARR];
+	for (int i = 0; i < LEN_ARR; i++) {
 		global_arr[i] = 1;
 	}
-	int local_len = len_arr / comm_sz + (len_arr % comm_sz > my_rank);
+	int local_len = LEN_ARR / comm_sz + (LEN_ARR % comm_sz > my_rank);
 	int *local_arr = malloc(local_len * sizeof(int));
 
 	if (my_rank == 0) {
-		int base_len = len_arr / comm_sz;
-		int ret_len = len_arr % comm_sz;
+		int base_len = LEN_ARR / comm_sz;
+		int ret_len = LEN_ARR % comm_sz;
 		total_sum = local_arr[0];
         int add_v=0;
 		for (int source = 1; source < comm_sz; source++) {

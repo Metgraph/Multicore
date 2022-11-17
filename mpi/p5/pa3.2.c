@@ -42,6 +42,7 @@ int main() {
 	}
     //end code suggestion
 
+    //get the values excluded by distribution
 	int my_rem = my_attempts * comm_sz + my_rank;
 	if (my_rem < total_attempts) {
 		x = rand_d(-1.0, 1.0);
